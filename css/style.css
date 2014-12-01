@@ -54,3 +54,27 @@ IMG.displayed {
     font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
     line-height: 18px;
 }
+
+.content .article .written-article {
+    margin: 40px 20px 0 40px;
+}
+
+.content .article .written-article .posted {
+    float: right;
+    margin: 0;
+    color: #c2c2c2;
+    font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    line-height: 18px;
+}
+
+.content .article .written-article .header {
+    background-color: #fff;
+    margin: 20px 0 -20px 0;
+}
+
+.content .article .written-article .header a {
+    text-decoration: none;
+    font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    font-size: 26px;
+    color: #c2c2c2;
+}
