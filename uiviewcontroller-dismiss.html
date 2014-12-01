@@ -12,6 +12,12 @@
             border: 0;
         }
 
+        IMG.displayed {
+            display: block;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
         .header {
             width: 100%;
             margin: 0;
@@ -125,7 +131,11 @@
             you to have access to what the user wished.
         </p>
 
-        <img src="uiviewcontrollerdismiss/storyboard-key-value.png" height="526" width="508" />
+        <img class="displayed"
+             alt=""
+             src="uiviewcontrollerdismiss/storyboard-key-value.png"
+             height="508"
+             width="526" />
 
         <p>
             Putting the above key path into the Storyboard file as shown above will cause the application to crash when
@@ -198,7 +208,11 @@ static const void *kDTFDismissAnimateKey = &kDTFDismissAnimateKey;
             an animation or not.
         </p>
 
-        <img src="uiviewcontrollerdismiss/dismiss-category-action.png" />
+        <img class="displayed"
+             alt=""
+             src="uiviewcontrollerdismiss/dismiss-category-action.png"
+             height="450"
+             width="720"/>
 
         <p>
             The full code for the category can be found <a href="https://github.com/darren102/UIViewController-DTFDismiss">here</a>.
