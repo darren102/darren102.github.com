@@ -3,6 +3,8 @@
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     <title>UIViewController Dismiss Category</title>
+    <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon">
+    <link rel="icon" href="/favicon.ico" type="image/x-icon">
     <script type="text/javascript"
             src="https://google-code-prettify.googlecode.com/svn/loader/run_prettify.js"></script>
     <style type="text/css">
@@ -166,7 +168,7 @@
 
 #import &lt;objc/runtime.h&gt;
 
-static const void *kDTFDismissAnimateKey = &kDTFDismissAnimateKey;
+static const void *kDTFDismissAnimateKey = &amp;kDTFDismissAnimateKey;
 
 @implementation NSObject (DTFDismissAnimate)
 
@@ -208,11 +210,7 @@ static const void *kDTFDismissAnimateKey = &kDTFDismissAnimateKey;
             an animation or not.
         </p>
 
-        <img class="displayed"
-             alt=""
-             src="uiviewcontrollerdismiss/dismiss-category-action.png"
-             height="450"
-             width="720"/>
+        <img class="displayed" alt="Displaying the dismiss category action" src="uiviewcontrollerdismiss/dismiss-category-action.png" height="450" width="720"/>
 
         <p>
             The full code for the category can be found <a href="https://github.com/darren102/UIViewController-DTFDismiss">here</a>.
