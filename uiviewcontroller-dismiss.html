@@ -18,6 +18,7 @@
         &nbsp;
     </div>
     <div class="article">
+        <div class="posted">Posted on Nov 30 2014</div>
         <p>
             When working with UIViewControllers one of the most used pieces of functionality is dismissing the view
             controller. As more and more projects where created it was noticed that the same piece of code was continually
@@ -164,10 +165,16 @@ static const void *kDTFDismissAnimateKey = &amp;kDTFDismissAnimateKey;
 
         <img class="displayed" alt="Displaying the dismiss category action" src="uiviewcontrollerdismiss/dismiss-category-action.png" height="450" width="720"/>
 
+        <h3>Conclusion</h3>
         <p>
-            The full code for the category can be found <a href="https://github.com/darren102/UIViewController-DTFDismiss">here</a>.
-            There is also a <a href="https://github.com/darren102/DTFViewControllerDismissExample">sample project</a> that will show you the category in action
+            This category is useful to avoid code duplication across multiple view controllers. The ability to set the animation
+            property also provides the user with the advantage of being able to configure everything through the Storyboard without
+            having to go into the code base itself and change properties or add any additional code. The category code for this blog
+            can be found <a href="https://github.com/darren102/UIViewController-DTFDismiss">here</a>. A brief sample project with a
+            dismissable modal view controller can be found <a href="https://github.com/darren102/DTFViewControllerDismissExample">here</a>.
         </p>
+        <br/><br/>
+        <a href="/index.html">Main Page</a>
     </div>
     <div class="rightside">
         &nbsp;

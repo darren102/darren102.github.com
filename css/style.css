@@ -46,3 +46,11 @@ IMG.displayed {
     line-height: 18px;
     color: rgb(41, 47, 51);
 }
+
+.content .article .posted {
+    text-align: right;
+    margin: 10px 0 -5px 0;
+    color: #c2c2c2;
+    font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    line-height: 18px;
+}
