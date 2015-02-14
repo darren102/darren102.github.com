@@ -1,0 +1,268 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>Objective-C Runtime Associations</title>
+    <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon">
+    <link rel="icon" href="/favicon.ico" type="image/x-icon">
+    <script type="text/javascript"
+            src="https://google-code-prettify.googlecode.com/svn/loader/run_prettify.js"></script>
+    <link type="text/css" rel="stylesheet" href="css/style.css" media="all">
+</head>
+<body>
+<div class="header">
+    <h1>Objective-C Runtime Associations</h1>
+</div>
+<div class="content">
+    <div class="leftside">
+        &nbsp;
+    </div>
+    <div class="article">
+        <div class="posted">Posted on Feb 13 2015</div>
+        <p>
+            Objective-C as a language has been around since the early 1980s and thus is a very mature language compared to the newer languages such
+            as Swift which Apple introduced at WWDC 2014. While Swift is a breath of fresh air in sense of having the Apple development community very
+            excited we cannot ignore the fact that many of Apple's current frameworks are for the majority written in Objective-C. With this in mind
+            this post attempts to discuss runtime object association which is one of the useful features found in the Objective-C runtime.
+            <pre class="prettyprint">#import &lt;objc/runtime.h&gt;</pre>
+        </p>
+
+        <h3>Associating Objects</h3>
+        <p>
+            One of the nice features in the Objective-C runtime is the ability to associate objects with other objects living in the runtime. These objects
+            you can associate with can either be your own custom objects or provided objects associated with Apples frameworks (UIView, NSString, etc...).
+            One of the main benefits for associating objects is that you can provide extra functionality to objects that you do not own and hence can add
+            information without sub-classing.<br/>
+            <br/>
+            The Objective-C runtime provides the following methods for object association:
+            <ul>
+                <li>objc_setAssociatedObject - "Sets an associated value for a given object using a given key and association policy" </li>
+                <li>objc_getAssociatedObject - "Returns the value associated with a given object for a given key" </li>
+                <li>objc_removeAssociatedObjects - "Removes all associations for a given object" </li>
+            </ul>
+        </p>
+        <h4>Implementations</h4>
+        <p>
+        <ul>
+            <li>Adding an extra property through the runtime</li>
+            <li>Using <code>UIAlertView</code> in a similar way to <code>UIAlertController</code></li>
+        </ul>
+
+        <b>Adding an extra property through the runtime</b><br/>
+        Adding an extra property to an existing object is done through the use of Objective-C category extensions. These categories will provide you the ability
+        to change the object on the fly without having to subclass the object. In the scenario below the idea is to add a property to an <code>Area</code> object
+        called <code>confidentialName</code>.
+
+<pre class="prettyprint">
+#import &lt;objc/runtime.h&gt;
+#import &lt;Area.h&gt;
+
+/**
+ * Key for associating the value with an object
+ */
+static void *kAreaConfidentialName = &amp;kAreaConfidentialName; // 1.
+
+@implementation Area (Confidential)
+
+- (NSString*)confidentialName
+{
+    return objc_getAssociatedObject(self, kAreaConfidentialName); // 2.
+}
+
+- (void)setConfidentialName:(NSString*)confidentialName
+{
+    objc_setAssociatedObject(self, kAreaConfidentialName, confidentialName, OBJC_ASSOCIATION_RETAIN); // 3.
+}
+
+@end
+</pre>
+        This code presents an implementation to the aforementioned scenario. Here's what's going on in more detail:<br/>
+        <ol>
+            <li>Key used to set / get associations from the object </li>
+            <li>Retrieving the value from the object associated with the key</li>
+            <li>Setting the value on the object for the key</li>
+        </ol>
+
+        Some points to note about the above is that the key is a static void pointer and it points to the address of itself. The reasoning behind this
+        is that for you to be able to access the same information at runtime when getting and setting the key needs to be exactly the same i.e. identical
+        otherwise you will never be able to retrieve information that you have set. By declaring the variable static and by utilizing its address we are
+        able to guarantee that the key will always point to the same memory address and thus setting and getting the information will work as expected.
+        <br/><br/>
+        <b>Using UIAlertView in a similar vain to UIAlertController</b><br/>
+        One of my pet hates before iOS8 came along with <code>UIAlertController</code> was that you had to utilize the delegate <code>UIAlertViewDelegate</code> in
+        order to handle users interacting with a <code>UIAlertView</code>. This was fine when you had one or two <code>UIAlertView's</code> inside your class but if
+        more than that number occurred you had to resort to using the <code>tag</code> option and set a numeric tag on each <code>UIAlertView</code> so you could
+        later identify them in the delegate as shown below.
+
+<pre class="prettyprint">
+@interface ViewController&lt;UIAlertViewDelegate&gt;
+
+@end
+
+@implementation ViewController
+
+- (IBAction)displayAlert:(id)sender
+{
+    UIAlertView *alertView = [[UIAlertView alloc]
+                              initWithTitle:NSLocalizedString(@"Display Alert View 10000", nil)
+                                    message:NSLocalizedString(@"Displaying an alert view 10000", nil)
+                                   delegate:self
+                          cancelButtonTitle:NSLocalizedString(@"Cancel", nil)
+                          otherButtonTitles:NSLocalizedString(@"Dismiss", nil),
+                             nil];
+    alertView.tag = 10000;
+    [alertView show];
+}
+
+- (IBAction)displayAlert:(id)sender
+{
+    UIAlertView *alertView = [[UIAlertView alloc]
+                              initWithTitle:NSLocalizedString(@"Display Alert View 10001", nil)
+                                    message:NSLocalizedString(@"Displaying an alert view 10001", nil)
+                                   delegate:self
+                          cancelButtonTitle:NSLocalizedString(@"Cancel", nil)
+                          otherButtonTitles:NSLocalizedString(@"Dismiss", nil),
+                             nil];
+    alertView.tag = 10001;
+    [alertView show];
+}
+
+# pragma mark - UIAlertViewDelegate instance methods (UIALERTVIEWDELEGATE)
+
+- (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex
+{
+    if (alertView.tag == 10000) {
+        // Do something with alertView 10000
+    } else if (alertView.tag == 10001) {
+        // Do something with alertView 10001
+    }
+}
+
+@end
+</pre>
+        As you can see from above this can get very cumbersome having to remember which <code>UIAlertView</code> is answering its delegate call and more to the point
+        if you have a large view controller with the alerts spread through the code, it is difficult to know exactly where in the view controller the delegate was
+        instantiated and hence know what conditions caused the alert to fire in the first place.<br/>
+        The code below shows you how to utilize the Objective-C runtime to achieve a more elegant look:
+
+<pre class="prettyprint">
+#import &lt;objc/runtime.h&gt;
+
+/**
+ * Key to hold the block of code to run inside the UIAlertViewDelegate method
+ */
+static void *kAlertViewDelegateCodeKey = &amp;kAlertViewDelegateCodeKey;
+
+@interface ViewController&lt;UIAlertViewDelegate&gt;
+
+@end
+
+@implementation ViewController
+
+- (IBAction)displayAlert:(id)sender
+{
+    // 1.
+    UIAlertView *alertView = [[UIAlertView alloc]
+             initWithTitle:NSLocalizedString(@"Unsaved Changes", nil)
+                   message:NSLocalizedString(@"You will lose your unsaved changes. Are you sure?", nil)
+                  delegate:self
+         cancelButtonTitle:NSLocalizedString(@"No", nil)
+         otherButtonTitles:NSLocalizedString(@"Yes", nil), nil];
+
+    // 2.
+    objc_setAssociatedObject(alertView, kAlertViewDelegateCodeKey, ^(NSInteger buttonIndex) {
+        if (buttonIndex == 1) {
+            // Do something if the user decides Yes
+        }
+    }, OBJC_ASSOCIATION_COPY);
+    [alertView show];
+}
+
+# pragma mark - UIAlertViewDelegate instance methods (UIALERTVIEWDELEGATE)
+
+- (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex
+{
+    // 3.
+    void (^codeBlock)(NSInteger) = objc_getAssociatedObject(alertView, kAlertViewDelegateCodeKey);
+    // 4.
+    if (codeBlock) {
+        codeBlock(buttonIndex);
+    }
+}
+
+@end
+</pre>
+        The code presents an implementation of utilizing the associations to keep your alert firing code and delegate code together in the same method.
+        Here's what's going on in more detail:
+        <ol>
+            <li>Creating the <code>UIAlertView</code> we wish to display in the application </li>
+            <li>Setting an association on the <code>alertView</code> that shall be run inside the delegate </li>
+            <li>Retrieving the delegate code block associated with the <code>alertView</code></li>
+            <li>Verifying we actually have a valid code block since calling this while <code>nil</code> will result in a crash</li>
+        </ol>
+        </p>
+
+        <h3>Removing Associations</h3>
+        The association with the object can be removed programatically or through the objects natural lifecycle coming to an end and thus once it is deallocated
+        the association will of coure be removed automatically by the system. The code below shows the two ways to remove the association programatically:
+
+<pre class="prettyprint">
+#import &lt;objc/runtime.h&gt;
+
+/**
+ * Key to hold the associated object
+ */
+static void *kAssociatedObjectKey = &amp;kAssociatedObjectKey;
+
+@implementation ViewController
+
+- (IBAction)removeSingleAssociatedObject:(id)sender
+{
+    // 1.
+    objc_setAssociatedObject(self, kAssociatedObjectKey, nil, OBJC_ASSOCIATION_COPY);
+}
+
+- (IBAction)removeAllAssociatedObjects:(id)sender
+{
+    // 2.
+    objc_removeAssociatedObjects(self);
+}
+
+@end
+</pre>
+        The code shows an implementation of removing associations at runtime from an object. Here's what's going on in more detail:
+        <ol>
+            <li>Setting the object to <code>nil</code> for a specific key removes the association at runtime</li>
+            <li>Removes all associated objects regardless of who set them. Only use if you know you want a clean object</li>
+        </ol>
+
+        <h3>Objective-C Runtime Association Policies</h3>
+        While going through this post you may have noticed that when setting the associated object we are utilizing the OBJC_ASSOCIATION_COPY as the last parameter in the method.
+        If you look through the <code>runtime.h</code> file and find the declaration you will notice that this is an Association Policy which determines how the value / object shall
+        be associated when calling the method. Possible values are listed below:
+        <ul>
+            <li><code>OBJC_ASSOCIATION_ASSIGN</code> - associated object will have a weak reference</li>
+            <li><code>OBJC_ASSOCIATION_RETAIN_NONATOMIC</code> - associated object will have a strong reference made nonatomically</li>
+            <li><code>OBJC_ASSOCIATION_COPY_NONATOMIC</code> - associated object is copied and the association is made nonatomically</li>
+            <li><code>OBJC_ASSOCIATION_RETAIN</code> - associated object has a strong reference and it is made atomically</li>
+            <li><code>OBJC_ASSOCIATION_COPY</code> - associated object is copied and it is made atomically</li>
+        </ul>
+
+        <h3>Conclusion</h3>
+        The Objective-C runtime is a very powerful beast and this post just touches the tip of the iceberg in terms of what you can achieve by manipulation the runtime. With the release
+        of iOS8 and the <code>UIAlertController</code> class the need for supporting the associated on <code>UIAlertView's</code> has diminished, however if you have to support any devices
+        running a version less than iOS8 it could still become a useful tool in your toolbox for keeping your code cleaner and neater.
+        <br/><br/>
+        <div style="float:right;">
+            <a href="https://twitter.com/darren102" class="twitter-follow-button" data-show-count="false">Follow @darren102</a> <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+'://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js,fjs);}}(document, 'script', 'twitter-wjs');</script>
+
+            <a href="https://twitter.com/share" class="twitter-share-button" data-via="darren102" data-related="darren102">Tweet</a> <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+'://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js,fjs);}}(document, 'script', 'twitter-wjs');</script>
+        </div>
+        <a href="/index.html">Main Page</a>
+    </div>
+    <div class="rightside">
+        &nbsp;
+    </div>
+</div>
+</body>
+</html>

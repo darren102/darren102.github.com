@@ -43,7 +43,7 @@ IMG.displayed {
     padding: 0 10px 0 10px;
     background-color: #fff;
     font-family: Helvetica, Arial, sans-serif;
-    line-height: 18px;
+    line-height: 25px;
     color: rgb(41, 47, 51);
 }
 
@@ -52,7 +52,7 @@ IMG.displayed {
     margin: 10px 0 -5px 0;
     color: #c2c2c2;
     font-family: Helvetica, Arial, sans-serif;
-    line-height: 18px;
+    line-height: 25px;
 }
 
 .content .article .written-article {
@@ -64,7 +64,7 @@ IMG.displayed {
     margin: 0;
     color: #c2c2c2;
     font-family: Helvetica, Arial, sans-serif;
-    line-height: 18px;
+    line-height: 25px;
 }
 
 .content .article .written-article .header {
@@ -77,4 +77,15 @@ IMG.displayed {
     font-family: Helvetica, Arial, sans-serif;
     font-size: 26px;
     color: #c2c2c2;
+}
+
+pre {
+    line-height: 15px;
+}
+
+code {
+    font-family: 'Droid Sans Mono',sans-serif;
+    font-weight: bold;
+    font-size: 14px;
+    color: #00CC99;
 }
