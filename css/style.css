@@ -17,13 +17,25 @@ IMG.displayed {
     padding: 0;
     background-color: #00CC99;
     height: 60px;
+    color: #fff;
 }
 
 .header h1 {
     margin: 0;
     padding: 10px;
     text-align: center;
+}
+
+.header h3 {
+    margin: 0;
+    padding: 18px;
+    text-align: center;
+    float: left;
+}
+
+.header h3 a {
     color: #fff;
+    text-decoration: none;
 }
 
 .content .leftside {
