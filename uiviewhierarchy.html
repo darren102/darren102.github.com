@@ -22,20 +22,20 @@
         <div class="posted">Posted on Dec 8 2014</div>
         <p>
             I have seen this a lot where users on sites such as <a href="http://stackoverflow.com" target="_new">Stack Overflow</a>
-            have issues with the iOS UIView hierarchy. Many of the questions are related too how do i make a view stay behind
-            another view or how do i make a view be the bottom view of the UIViewController. Looking at these questions the answers
+            have issues with the iOS <code>UIView</code> hierarchy. Many of the questions are related too how do i make a view stay behind
+            another view or how do i make a view be the bottom view of the <code>UIViewController</code>. Looking at these questions the answers
             tend to be different on a per user answered basis and generally only cover either how to do it in a Storyboard but not
-            in code or vice versa. The purpose of this blog post is to show both ways of manipulating the UIView hierarchy.
+            in code or vice versa. The purpose of this blog post is to show both ways of manipulating the <code>UIView</code> hierarchy.
         </p>
 
         <h3>Code Based</h3>
         <p>
-            Using code to manipulate the view hierarchy standard UIKit provides all of the methods you will ever require right
-            out of the box inside the UIView class. The main benefit in using code to manipulate the view hierarchy is that
-            you can manipulate the view hierarchy at run time and based on configurations or runtime data alter the view hierarchy
+            Using code to manipulate the view hierarchy standard <code>UIKit</code> provides all of the methods you will ever require right
+            out of the box inside the <code>UIView</code> class. The main benefit in using code to manipulate the view hierarchy is that
+            you can then perform manipulations at run time and based on configurations or runtime data alter the view hierarchy
             to be completely different than the original initialization.
 
-            Some of the UIKit methods that can be utilized to manipulate your view hierarchy are listed below.
+            Some of the <code>UIKit</code> methods that can be utilized to manipulate your view hierarchy are listed below.
         </p>
 
         <ul>
@@ -49,11 +49,11 @@
         </ul>
 
         <p>
-            This blog posting will show examples of 'addSubView:', 'bringSubviewToFrom:', 'sendSubViewToBack:', 'insertSubview:aboveSubview:' and
-            finally 'insertSubview:belowSubview'.
+            This blog posting will show examples of <code>addSubView:</code>, <code>bringSubviewToFrom:</code>, <code>sendSubViewToBack:</code>, <code>insertSubview:aboveSubview:</code> and
+            finally <code>insertSubview:belowSubview</code>.
 
-            Based on what has been stated above the code below will create an initial view hierarchy for a particular 'UIViewController'
-            dynamically creating the views via code in the 'viewDidLoad:' method of the 'UIViewController'.
+            Based on what has been stated above the code below will create an initial view hierarchy for a particular <code>UIViewController</code>
+            dynamically creating the views via code in the <code>viewDidLoad:</code> method of the <code>UIViewController</code>.
         </p>
 
 <pre class="prettyprint">
@@ -93,31 +93,31 @@
             </li>
             <li>
                 Creates a view with a width and height of 100 pixels and a background fill color of red and an offset of
-                100 pixels from the top and left of the parent view. The view is added to the UIViewController view using
-                the 'addSubview:' method.
+                100 pixels from the top and left of the parent view. The view is added to the <code>UIViewController</code> view using
+                the <code>addSubview:</code> method.
             </li>
             <li>
                 Creates a view with a width and height of 200 pixels and a background fill color of green and an offset of
-                50 pixels from the top and left of the parent view. The view is added to the UIViewController view using
-                the 'insertSubview:belowSubview:' method.
+                50 pixels from the top and left of the parent view. The view is added to the <code>UIViewController</code> view using
+                the <code>insertSubview:belowSubview:</code> method.
             </li>
             <li>
                 Creates a view with a width and height of 50 pixels and a background fill color of purple and an offset of
-                75 pixels from the top and left of the parent view. The view is added to the UIViewController view using
-                the 'insertSubView:aboveSubview:' method
+                75 pixels from the top and left of the parent view. The view is added to the <code>UIViewController</code> view using
+                the <code>insertSubView:aboveSubview:</code> method
             </li>
         </ol>
 
         <p>
-            When running the code above the view hierarchy will be displayed on the device.
+            When running the code above the view hierarchy will be displayed on the device as shown below.
         </p>
 
         <img class="displayed" alt="" src="uiviewhierarchy/code-based-uiview-hierarchy.png" height="669" width="375" />
 
         <p>
-            Now that you have created the views and done some simple movement of the views it is time to do some more
-            changes to the view hierarchy. To do this two 'UIBarButtonItems' have been created in the StoryBoard and hooked
-            up to their respective 'IBAction' methods as shown below.
+            Now that you have created the views and performed some simple movement via code it is time to do some more
+            changes to the view hierarchy. To do this two <code>UIBarButtonItems</code> have been created in the StoryBoard and hooked
+            up to their respective <code>IBAction</code> methods as shown below.
         </p>
 
         <img class="displayed" alt="" src="uiviewhierarchy/uinavigation-button-hookups.png" height="381" width="615" />
@@ -153,7 +153,7 @@
         </ol>
 
         <p>
-            By tapping the "Bring Front" button in the navigation bar the black view will be brought to the front and the
+            By tapping the <code>Bring Front</code> button in the navigation bar the black view will be brought to the front and the
             view hierarchy on the device will now look as shown below.
         </p>
 
@@ -161,17 +161,17 @@
 
         <p>
             As you can see from the image the black view now completely obscures all of the other views and is the only view
-            that is visible to the user. Tapping on the "Send Back" button will return the view hierarchy to what you originally
+            that is visible to the user. Tapping on the <code>Send Back</code> button will return the view hierarchy to what you originally
             had when the view was originally loaded.
         </p>
 
         <h3>Storyboard / XIB Based</h3>
 
         <p>
-            A Storyboard / XIB based view hierarchy is basically a static hierarchy of how the 'UIViewController' will layout its views and their
+            A Storyboard / XIB based view hierarchy is basically a static hierarchy of how the <code>UIViewController</code> will layout its views and their
             subviews when it is initialized. Creating the view hierarchy in the Storyboard / XIB file is just as simple as dragging and dropping
             the components onto the view controller provided for you. The view hierarchy in a storyboard is based on when the subview is dropped
-            onto it. Think of dropping a subview onto a Storyboard / XIB as though you were using the coding method 'addSubview:'. The first subview
+            onto it. Think of dropping a subview onto a Storyboard / XIB as though you were using the coding method <code>addSubview:</code>. The first subview
             that is dropped will be the back most subview in the hierarchy. As you drop more and more subviews on the hierarchy you will see that they
             are placed on top of existing subviews already in the hierarchy as shown below.
         </p>
@@ -194,7 +194,7 @@
 
         <h3>Conclusion</h3>
         <p>
-            While it is easier to setup a view hierarchy inside Storyboard and XIB file and also setup IBOutlets in order to control
+            While it is easier to setup a view hierarchy inside Storyboard and XIB file and also setup the corresponding <code>IBOutlets</code> in order to control
             them as though you have set them up through the code. At some point you will still have to use the code approach in order
             to manipulate the view hierarchy at runtime. Lots of people decide not to use Storyboard or XIB files at all and only write
             their view hierarchy in the code itself. Personally for me i decide based on the widget / control or hierarchy and then determine
