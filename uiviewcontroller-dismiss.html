@@ -21,9 +21,9 @@
     <div class="article">
         <div class="posted">Posted on Nov 30 2014</div>
         <p>
-            When working with UIViewControllers one of the most used pieces of functionality is dismissing the view
-            controller. As more and more projects where created it was noticed that the same piece of code was continually
-            being written over and over again.
+            When working with a <code>UIViewController</code> one of the most used pieces of functionality is dismissing the view
+            controller. As more and more projects where created and more and more <code>UIViewController</code> classes were created
+            it was noticed that the same piece of code was continually being written over and over again.
         </p>
 
         <h4>Dismiss Modal View Controller Code</h4>
@@ -35,12 +35,12 @@
 </pre>
 
         <p>
-            The IBAction from the above code will allow the user to attach an event from the Interface Builder to this
-            method and dismiss the currently displayed view controller. Since animated is 'YES' it will
-            perform a default iOS animation unless you have overridden the animation in your UIViewController delegate.
+            The <code>IBAction</code> from the above code will allow the user to attach an event from the Interface Builder to this
+            method and dismiss the currently displayed <code>UIViewController</code>. Since animated is <code>YES</code> it will
+            perform a default iOS animation unless you have overridden the animation in your <code>UIViewController</code> delegate.
         </p>
         <p>
-            It was therefore determined that a category could be created on the UIViewController object that would have
+            It was therefore determined that a category could be created on the <code>UIViewController</code> object that would have
             this code already pre-written and hence you would only ever have to include the category in your project and
             the functionality would be there in one place. This category would be very simple incorporating the code
             written above along with two other useful category methods. The full category is shown below.
@@ -69,18 +69,17 @@
 </pre>
 
         <p>
-            The two extra category methods associated with the UIViewController are based on using a UINavigationController
-            with the functionality and pop the current view off the UINavigationController stack or alternatively the
-            second option will pop all of the UIViewControllers off the UINavigationController stack and return you to
-            the root View Controller for the UINavigationController.<br/><br/>
+            The two extra category methods associated with the <code>UIViewController</code> are based on using a <code>UINavigationController</code>
+            with the functionality and pop the current view off the <code>UINavigationController</code> stack or alternatively the
+            second option will pop all of the view controllers off the <code>UINavigationController</code> stack and return you to
+            the root view controller for the <code>UINavigationController</code>.<br/>
         </p>
 
         <h3>Controlling the Animated Portion</h3>
         <p>
-            From the above code snipet you only have the ability to set the Animation to 'YES' in its current state which
-            might not be the desired behavior you wish. From a developer perspective this is a limitation since the methods
-            would have to be duplicated with the appropriate 'NO' or 'YES' for each animation depending which is not what
-            we want to achieve in any helper methods being created.
+            From the above code snipet you only have the ability to set the animation value while dismissing the view controller to <code>YES</code>.
+            From a developer perspective this is a limitation since the methods would have to be duplicated with the appropriate <code>NO</code> or <code>YES</code>
+            values for each animation depending which is not what we want to achieve in any helper methods being created.
             Since the main aspect of this library is to allow you to utilize the Storyboard it would be better if the
             library also allowed you to control the animation property from the Storyboard. Initially for this it was
             assumed you could just put a property in the Storyboard key/value pairs for the object and this would allow
@@ -106,11 +105,11 @@
 
         <p>
             The NSObject+DTFDismissAnimate category utilizes the Objective C runtime in order to allow creation of a new
-            property on a class without subclassing the class. Using the Objective C runtime '<b>objc_setAssociatedObject</b>'
-            and '<b>objc_getAssociated</b>' methods we can simulate the NSObject class having the new runtime property
-            '<b>dtfDismissAnimate</b>'. As seen below the category is using NSNumber's to store the value. This is because
-            we cannot associate anything which is not an object and NSNumber will store BOOLEAN values and allow us to
-            retrieve them as and when required.
+            property on a class without subclassing the class. Using the Objective C runtime <code>objc_setAssociatedObject</code>
+            and <code>objc_getAssociated</code> methods we can simulate the <code>NSObject</code> class having the new runtime property
+            <code>dtfDismissAnimate</code>. As seen below the category is using the <code>NSNumber</code> class to store the value. This
+            behavior was required because we cannot associate anything which is not an object and <code>NSNumber</code> allows the application
+            to store <code>BOOLEAN</code> values and retrieve the values where requested.
         </p>
 <pre class="prettyprint">
 
@@ -141,15 +140,15 @@ static const void *kDTFDismissAnimateKey = &amp;kDTFDismissAnimateKey;
 </pre>
 
         <p>
-            As can be seen the header file just declares the property '<b>dtfDismissAnimate</b>' as a BOOL property. This
+            As can be seen the header file just declares the property <code>dtfDismissAnimate</code> as a BOOL property. This
             property will be used as any other property on an object for holding the value of the animation. In the implementation
             of the category we declare a static constant key that shall hold the value of the property on the object. We
-            have to implement the getter and setter ourself since Objective C will not do it for us. The getter is just a
-            simple lookup on the object for the value associated with the '<b>kDTFDismissAnimateKey</b>'. If a value exists
-            it will be returned otherwise a default of 'NO' is returned since we cannot return '<b>nil</b>' when the return
+            have to implement the getter and setter manually since Objective C will not synthesize them for us. The getter is just a
+            simple lookup on the object for the value associated with the <code>kDTFDismissAnimateKey</code>. If a value exists
+            it will be returned otherwise a default of <code>NO</code> is returned since we cannot return <code>nil</code> when the return
             type is not an object. Now we have the category defined running the application and loading the view controller
-            containing the button with our '<b>dtfDismissAnimate</b>' key path will no longer crash the application but allow
-            the UIViewController category to retrieve the value from the user defined Storyboard value and either animate or
+            containing the button with our <code>dtfDismissAnimate</code> key path will no longer crash the application but allow
+            the <code>UIViewController</code> category to retrieve the value from the user defined Storyboard value and either animate or
             not animate the transition of dismissing the view controller.
         </p>
 
@@ -157,9 +156,9 @@ static const void *kDTFDismissAnimateKey = &amp;kDTFDismissAnimateKey;
 
         <p>
             Once you have all of the files setup in your project, you can now utilize the storyboard to setup dismissing the
-            modal view controller. Dragging from the UIBarButtonItem in the case below to the UIViewController will popup the
+            modal view controller. Dragging from the <code>UIBarButtonItem</code> in the case below to the <code>UIViewController</code> will popup the
             choices and inside the actions choices you will see the three choices made available by the category. Choosing the
-            '<b>dtf_dismissViewController</b>' will allow when running the application to dismiss the view controller and if
+            <code>dtf_dismissViewController</code> method will allow the application to dismiss the view controller and if
             you set the animation property as shown above then this will determine whether the view controller is dismissed with
             an animation or not.
         </p>
