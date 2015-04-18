@@ -1,0 +1,209 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>UITableViewCell Automatic Height</title>
+    <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon">
+    <link rel="icon" href="/favicon.ico" type="image/x-icon">
+    <script type="text/javascript"
+            src="https://google-code-prettify.googlecode.com/svn/loader/run_prettify.js"></script>
+    <link type="text/css" rel="stylesheet" href="css/style.css" media="all">
+</head>
+<body>
+<div class="header">
+    <h3><a href="/index.html">Home</a></h3>
+    <h1>UITableViewCell Automatic Height</h1>
+</div>
+<div class="content">
+    <div class="leftside">
+        &nbsp;
+    </div>
+    <div class="article">
+        <div class="posted">Posted on April 18 2015</div>
+        <p>
+            One of the memories of WWDC last year for myself was sitting in the auditorium and listening about allowing iOS to calculate the height for
+            each of the UITableViewCell's inside a UITableView and thus allow for the developer to no longer implement the delegate to calculate the height
+            for the row at each <code>indexPath</code>. This functionality is definitely useful if apple implemented it correctly and
+            there were no underlying bugs in it. With iOS8.3 the solution finally seems to be stable and not have any issues with the <code>UIScrollView</code>
+            content offsets when coming back to the <code>UIViewController</code> holding the <code>UITableView</code> from another
+            <code>UIViewController</code>.
+        </p>
+
+        <h3>How It Works</h3>
+        <p>
+            Under the hood, Apple have utilized AutoLayout to calculate the automatic height of the row during the creation of each <code>UITableViewCell</code>.
+            In order for Automatic Cell Height to work you need to configure the following in an application.
+            <ul>
+                <li>Set the estimated height per row</li>
+                <li>Set the row height to a special Apple designated constant</li>
+                <li>AutoLayout constraints on the <code>UITableViewCell</code></li>
+            </ul>
+        </p>
+        <h3>Implementation</h3>
+        <p>
+            In order for the <code>UITableView</code> to calculate the size automatically you need to set up the estimated height per row and the row height to
+            the special apple constant <code>UITableViewAutomaticDimension</code> as shown in the code snipet below.
+
+<pre class="prettyprint">
+tableView.estimatedRowHeight = 166.0 // 1.
+tableView.rowHeight = UITableViewAutomaticDimension // 2.
+</pre>
+            Here is what is occurring in the code above:
+            <ol>
+                <li>Provides as accurate as possible the estimated height of each row</li>
+                <li>Allows the UITableView to return the rowHeight based off information from the <code>UITableViewCell</code></li>
+            </ol>
+
+            The above code is all the configuration that you need to do in order for the <code>UITableView</code> to use automatic calculations for the rowHeight per row.
+        </p>
+
+        <h4>UITableViewCell Setup</h4>
+        <p>
+            The <code>UITableViewCell</code> must provide enough information through its AutoLayout constraints so the <code>UITableView</code> can calculate the height of the cell when it has been configured with all of its data.
+            You can do this either through a Storyboard or alternatively through the code. For this blog we will show how to do it through the code but the same principals apply to the Storyboard.
+            Go to File -> New -> File and you will see the screen below:
+        </p>
+        <img class="displayed" alt="" src="uitableviewcellautomaticheight/Create-New-Class.png" height="429" width="732" /><br/>
+            Choose the iOS -> Source -> Cocoa Touch Class and hit the "<b>Next</b>" button.<br/>
+        <img class="displayed" alt="" src="uitableviewcellautomaticheight/Create-New-Class-2.png" height="433" width="733" /><br/>
+            Name the file approriately for the case of this demo it has been named "<b>DTFAutomaticTableViewCell</b>" and click the "<b>Next</b>" button<br/>
+        <p>
+            For demonstration purposes we will put two <code>UILabel</code> objects into the <code>UITableViewCell</code>'s contentView and setup their constraints.
+<pre class="prettyprint">
+    // 1.
+    private lazy var titleLabel: UILabel = {
+        let label = UILabel()
+        label.setTranslatesAutoresizingMaskIntoConstraints(false)
+        label.textAlignment = .Left
+        label.font = UIFont.preferredFontForTextStyle(UIFontTextStyleHeadline)
+        return label
+    }()
+    // 2.
+    private lazy var descriptionLabel: UILabel = {
+        let label = UILabel()
+        label.setTranslatesAutoresizingMaskIntoConstraints(false)
+        label.textAlignment = .Left
+        label.numberOfLines = 0
+        label.font = UIFont.preferredFontForTextStyle(UIFontTextStyleBody)
+        return label
+    }()
+
+    override init(style: UITableViewCellStyle, reuseIdentifier: String?) {
+        super.init(style: style, reuseIdentifier: reuseIdentifier)
+
+        // 3.
+        contentView.addSubview(titleLabel)
+        contentView.addSubview(descriptionLabel)
+        setupConstraints()
+    }
+
+    private func setupConstraints() {
+        // 4.
+        let viewsDictionary = ["title":titleLabel, "description":descriptionLabel]
+        // 5.
+        let metrics = ["titleHeight":17.0,
+            "leadingMargin" : 15.0,
+            "trailingMargin" : 5.0,
+            "verticalSpacing" : 8.0]
+
+        // Setup the title label horizontal constraints
+        NSLayoutConstraint.activateConstraints(NSLayoutConstraint.constraintsWithVisualFormat(
+            "|-(leadingMargin)-[title]-(trailingMargin)-|",
+            options: NSLayoutFormatOptions(0),
+            metrics: metrics,
+            views: viewsDictionary))
+
+        // Setup the description label horizontal constraints
+        NSLayoutConstraint.activateConstraints(NSLayoutConstraint.constraintsWithVisualFormat(
+            "|-(leadingMargin)-[description]-(trailingMargin)-|",
+            options: NSLayoutFormatOptions(0),
+            metrics: metrics,
+            views: viewsDictionary))
+
+        // Setup the title and description label vertical constraints
+        NSLayoutConstraint.activateConstraints(NSLayoutConstraint.constraintsWithVisualFormat(
+            "V:|-(verticalSpacing)-[title(titleHeight)]-(verticalSpacing)-[description]-(verticalSpacing)-|",
+            options: NSLayoutFormatOptions(0),
+            metrics: metrics,
+            views: viewsDictionary))
+    }
+</pre>
+        Here is what is occurring in the code above
+        <ol>
+            <li>Setting up a <code>UILabel</code> that will hold title information. This is setup lazily so most of the configuration is in one place and not spread through your class.</li>
+            <li>Setting up a <code>UILabel</code> that will hold the description information the one difference with this one is the <b>numberOfLines</b> is set to 0. This will allow the <code>UILabel</code> to grow vertically with the contents it has inside of it. This is setup lazily so most of the configuration is in one place and not spread through your class.</li>
+            <li>Adding both the title and description <code>UILabel</code>'s to the <code>UITableViewCell</code>'s contentView.</li>
+            <li>Setting up the views dictionary so the views can be referenced when using AutoLayout visual format which is similar to ASCII art.</li>
+            <li>Setting up the metrics which are constants to be accessed while writing the AutoLayout visual format. This keeps everything neat and allows you to use constants so you change the code in one place vs multiple places.</li>
+        </ol>
+        The code at the bottom of the "setupConstraints" function sets the AutoLayout constraints on each of the views. Lets take a look at that in more depth.<br/>
+<pre class="prettyprint">
+    // Setup the title label horizontal constraints
+    NSLayoutConstraint.activateConstraints(NSLayoutConstraint.constraintsWithVisualFormat(
+        "|-(leadingMargin)-[title]-(trailingMargin)-|",
+        options: NSLayoutFormatOptions(0),
+        metrics: metrics,
+        views: viewsDictionary))
+</pre>
+        The above code is dealing with the "<b>titleLabel</b>" <code>UILabel</code> specifically its horizontal constraints:
+        <ul>
+            <li>"<b>leadingMargin</b>" is taken from the metrics dictionary setup previously and will be 15.0 in this case (the "metrics" parameter is passed the "<b>metrics</b>" dictionary)</li>
+            <li>"<b>title</b>" is a reference to the title <code>UILabel</code> and is provided via the "<b>viewsDictionary</b>" setup previously. ("title" represents the "titleLabel" <code>UILabel</code>)</li>
+            <li>"<b>trailingMargin</b>" is taken from the metrics dictionary setup previously and will be 5.0 in this case (the "metrics" parameter is passed the "<b>metrics</b>" dictionary)</li>
+        </ul>
+<pre class="prettyprint">
+    // Setup the description label horizontal constraints
+    NSLayoutConstraint.activateConstraints(NSLayoutConstraint.constraintsWithVisualFormat(
+        "|-(leadingMargin)-[description]-(trailingMargin)-|",
+        options: NSLayoutFormatOptions(0),
+        metrics: metrics,
+        views: viewsDictionary))
+</pre>
+        The above code is dealing with the "<b>descriptionLabel</b>" <code>UILabel</code> specifically its horizontal constraints:
+        <ul>
+            <li>"<b>leadingMargin</b>" is taken from the metrics dictionary setup previously and will be 15.0 in this case (the "metrics" parameter is passed the "<b>metrics</b>" dictionary)</li>
+            <li>"<b>description</b>" is a reference to the title <code>UILabel</code> and is provided via the "<b>viewsDictionary</b>" setup previously. ("description" represents the "descriptionLabel" <code>UILabel</code>)</li>
+            <li>"<b>trailingMargin</b>" is taken from the metrics dictionary setup previously and will be 5.0 in this case (the "metrics" parameter is passed the "<b>metrics</b>" dictionary)</li>
+        </ul>
+        Based off the above AutoLayout constraints the "<b>titleLabel</b>" and the "<b>descriptionLabel</b>" will both be 15 pixels from the contentView's left side and 5 pixels from the contentView's right side. They are both free by the AutoLayout constraints to make sure their width is always the width of the contentView - 20 pixels to account for the 15 left and 5 right pixel spacings.
+        </p>
+        <p>
+        Now that the horizontal constraints are setup the remaining piece is to setup the vertical constraints in order for iOS to be able to automatically calculate the height for the <code>UITableViewCell</code>.
+<pre class="prettyprint">
+    // Setup the title and description label vertical constraints
+    NSLayoutConstraint.activateConstraints(NSLayoutConstraint.constraintsWithVisualFormat(
+        "V:|-(verticalSpacing)-[title(titleHeight)]-(verticalSpacing)-[description]-(verticalSpacing)-|",
+        options: NSLayoutFormatOptions(0),
+        metrics: metrics,
+        views: viewsDictionary))
+</pre>
+        <ul>
+            <li>"<b>verticalSpacing</b>" is taken from the metrics dictionary setup previously and will be 8.0 in this case (the "metrics" parameter is passed the "<b>metrics</b>" dictionary)</li>
+            <li>"<b>title(titleHeight)</b>" this sets the vertical height for the title label based on the metric "titleHeight" (in this case 17.0) provided from the "<b>metrics</b>" dictionary</li>
+            <li>
+                "<b>-(verticalSpacing)-[description]-(verticalSpacing)-</b>" this determines that the top of the "<b>description</b>" <code>UILabel</code> should be 8 pixels below the bottom of the "<b>title</b>" <code>UILabel</code>.
+                This also determines that the bottom of the "<b>description</b>" <code>UILabel</code> should be 8 pixels above the contentView's bottom margin. There is no height restriction put on the "<b>description</b>" label since its
+                height is automatically calculated by the data inside it hence setting the "<b>numberOfLines</b>" earlier to 0.
+            </li>
+        </ul>
+        Now based off all of the constraints set iOS now has the ability to determine the height for the <code>UITableViewCell</code> and hence this can be used in the <code>UITableView</code> without having to implement the delegates as was the previous implementation.
+        </p>
+        <h3>Conclusion</h3>
+        <p>
+            Apple definitely made a big leap in maintainability for developers with this functionality since now we no longer have to perform the calculations ourselves but instead provided we setup the constraints correctly on our <code>UITableViewCell</code>'s we will get this functionality for free.
+            A link to a demonstration project is provided <a href="https://github.com/darren102/DTFAutomaticCellHeight">here</a>. This demo project provides a list of countries in the world with descriptions of different sizes for each country and thus the <code>UITableView</code> is calculating the heights for the <code>UITableViewCell</code>'s automatically.
+        </p>
+        <br/><br/>
+        <div style="float:right;">
+            <a href="https://twitter.com/darren102" class="twitter-follow-button" data-show-count="false">Follow @darren102</a> <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+'://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js,fjs);}}(document, 'script', 'twitter-wjs');</script>
+
+            <a href="https://twitter.com/share" class="twitter-share-button" data-via="darren102" data-related="darren102">Tweet</a> <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+'://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js,fjs);}}(document, 'script', 'twitter-wjs');</script>
+        </div>
+        <a href="/index.html">Main Page</a>
+    </div>
+    <div class="rightside">
+        &nbsp;
+    </div>
+</div>
+</body>
+</html>
